@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Memory Console</title>
+    <link rel="stylesheet" href="/app.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Persistent Memory Console</p>
+          <h1>聊天、查看记忆，并切换本地 Ollama 模型。</h1>
+        </div>
+        <div class="identity-panel">
+          <div class="panel-stack">
+            <div>
+              <label class="field-label" for="user-id">User ID</label>
+              <div class="identity-row">
+                <input id="user-id" class="text-input" value="u123" autocomplete="off">
+                <button id="refresh-all" class="ghost-button" type="button">Refresh</button>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div>
+                <label class="field-label" for="provider-select">Provider</label>
+                <select id="provider-select" class="text-input"></select>
+              </div>
+              <div>
+                <label class="field-label" for="model-select">Model</label>
+                <select id="model-select" class="text-input"></select>
+              </div>
+            </div>
+
+            <div class="identity-row compact">
+              <p id="ai-status" class="status-pill offline">Ollama offline</p>
+            </div>
+
+            <p id="config-status" class="microcopy">
+              页面默认连接本机 Ollama，不再要求用户在页面中输入 API Key。
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="chat-panel panel">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Assistant</p>
+              <h2>Chat</h2>
+            </div>
+            <button id="clear-chat" class="ghost-button" type="button">Clear View</button>
+          </div>
+
+          <div id="chat-thread" class="chat-thread"></div>
+
+          <form id="chat-form" class="composer">
+            <label class="field-label" for="chat-input">Message</label>
+            <textarea id="chat-input" class="composer-input" placeholder="Type a message. Enter sends. Shift+Enter adds a new line." rows="4"></textarea>
+            <div class="composer-actions">
+              <p id="chat-status" class="microcopy">Ready.</p>
+              <button id="send-button" class="primary-button" type="submit">Send</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="sidebar">
+          <section class="panel stats-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Overview</p>
+                <h2>Memory Health</h2>
+              </div>
+            </div>
+            <div id="stats-grid" class="stats-grid"></div>
+            <div id="category-bars" class="category-bars"></div>
+          </section>
+
+          <section class="panel add-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Manual Control</p>
+                <h2>Add Memory</h2>
+              </div>
+            </div>
+            <form id="memory-form" class="memory-form">
+              <div class="form-grid">
+                <div>
+                  <label class="field-label" for="memory-category">Category</label>
+                  <select id="memory-category" class="text-input">
+                    <option value="preference">preference</option>
+                    <option value="profile">profile</option>
+                    <option value="ongoing_task">ongoing_task</option>
+                    <option value="stack">stack</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="memory-key">Key</label>
+                  <input id="memory-key" class="text-input" value="language" autocomplete="off">
+                </div>
+              </div>
+              <div>
+                <label class="field-label" for="memory-value">Value</label>
+                <input id="memory-value" class="text-input" placeholder="zh-CN" autocomplete="off">
+              </div>
+              <div class="form-grid">
+                <div>
+                  <label class="field-label" for="memory-confidence">Confidence</label>
+                  <input id="memory-confidence" class="text-input" type="number" min="0" max="1" step="0.01" value="1">
+                </div>
+                <div>
+                  <label class="field-label" for="memory-expiry">Expiry Days</label>
+                  <input id="memory-expiry" class="text-input" type="number" min="1" step="1" placeholder="optional">
+                </div>
+              </div>
+              <label class="checkbox">
+                <input id="memory-pinned" type="checkbox">
+                <span>Pin this memory</span>
+              </label>
+              <div class="composer-actions">
+                <p id="memory-status" class="microcopy">No manual change pending.</p>
+                <button class="primary-button" type="submit">Store Memory</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel memory-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Long-Term State</p>
+                <h2>Memories</h2>
+              </div>
+              <label class="toggle">
+                <input id="show-inactive" type="checkbox">
+                <span>Show inactive</span>
+              </label>
+            </div>
+            <div id="memory-list" class="memory-list"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <template id="chat-message-template">
+      <article class="bubble">
+        <p class="bubble-role"></p>
+        <p class="bubble-content"></p>
+        <p class="bubble-meta"></p>
+      </article>
+    </template>
+
+    <template id="memory-card-template">
+      <article class="memory-card">
+        <div class="memory-head">
+          <div>
+            <p class="memory-category"></p>
+            <h3 class="memory-key"></h3>
+          </div>
+          <div class="memory-tags"></div>
+        </div>
+        <p class="memory-value"></p>
+        <div class="memory-meta"></div>
+        <div class="memory-actions">
+          <button class="small-button" data-action="pin" type="button">Pin</button>
+          <button class="small-button" data-action="archive" type="button">Archive</button>
+          <button class="small-button danger" data-action="delete" type="button">Delete</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
