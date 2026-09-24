@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_Z1729058584_memory_assistant_java_react_1790216590410-pr-trigger-input-set
+  identifier: Build_Z1729058584_memory_assistant_java_react_1790216590410prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_Z1729058584_memory_assistant_java_react_1790216590410
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
