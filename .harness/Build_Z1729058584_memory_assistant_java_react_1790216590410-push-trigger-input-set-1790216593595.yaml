@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_Z1729058584_memory_assistant_java_react_1790216590410-push-trigger-input-set
+  identifier: Build_Z1729058584_memory_assistant_java_react_1790216590410pushtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_Z1729058584_memory_assistant_java_react_1790216590410
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
